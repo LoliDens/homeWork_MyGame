@@ -12,19 +12,29 @@ namespace homeWork_MyGame
     {
         static void Main(string[] args)
         {
-            int playerX = 0;
-            int playerY = 0;
-            int playerDX = 0;
-            int playerDY = 0;
+            const ConsoleKey CommmandUp = ConsoleKey.W;
+            const ConsoleKey CommmandDown = ConsoleKey.S;
+            const ConsoleKey CommmandLeft = ConsoleKey.A;
+            const ConsoleKey CommmandRight = ConsoleKey.D;
+
+            const char SkinPlayerLookUp = '▲';
+            const char SkinPlayerLookDown = '▼';
+            const char SkinPlayerLookLeft = '◄';
+            const char SkinPlayerLookRight = '►';
+
+            int playerPositionX = 0;
+            int playerPositionY = 0;
+            int derectionTravelPlayer = 0;
+            int derectionTravePlayer = 0;
             int screenCenter = 25;
             char[] barrier = new char[2] { '+', '#' };
             bool isGameOver = false;
             char[,] map;
-            char skinPlayer = '◄';
+            char skinPlayer = SkinPlayerLookUp;
             ConsoleKeyInfo key;
             Console.CursorVisible = false;
 
-            map = SelectionLevel(ref playerX, ref playerY);
+            map = SelectionLevel(ref playerPositionX, ref playerPositionY);
             
 
             while (isGameOver == false) 
@@ -35,59 +45,58 @@ namespace homeWork_MyGame
 
                     switch (key.Key) 
                     {
-                        case ConsoleKey.W:
-                            playerDX = -1; 
-                            playerDY = 0;
-                            skinPlayer = '▲';
+                        case CommmandUp:
+                            derectionTravelPlayer = -1; 
+                            derectionTravePlayer = 0;
+                            skinPlayer = SkinPlayerLookUp;
                             break;
 
-                        case ConsoleKey.S:
-                            skinPlayer = '▼';
-                            playerDX = 1;
-                            playerDY = 0;
+                        case CommmandDown:
+                            skinPlayer = SkinPlayerLookDown;
+                            derectionTravelPlayer = 1;
+                            derectionTravePlayer = 0;
                             break;
 
-                        case ConsoleKey.D:
-                            skinPlayer = '►';
-                            playerDX = 0;
-                            playerDY = 1;
+                        case CommmandRight:
+                            skinPlayer = SkinPlayerLookRight;
+                            derectionTravelPlayer = 0;
+                            derectionTravePlayer = 1;
                             break;
 
-                        case ConsoleKey.A:
-                            skinPlayer = '◄';
-                            playerDX = 0;
-                            playerDY = -1;
+                        case CommmandLeft:
+                            skinPlayer = SkinPlayerLookLeft;
+                            derectionTravelPlayer = 0;
+                            derectionTravePlayer = -1;
                             break;                                 
                     }
 
-                    if (barrier.Contains(map[playerX + playerDX, playerY + playerDY]) == false) 
+                    if (barrier.Contains(map[playerPositionX + derectionTravelPlayer, playerPositionY + derectionTravePlayer]) == false) 
                     {
-                        Console.SetCursorPosition(playerY, playerX);
+                        Console.SetCursorPosition(playerPositionY, playerPositionX);
                         Console.Write(' ');
 
-                        playerX += playerDX;
-                        playerY += playerDY;
+                        playerPositionX += derectionTravelPlayer;
+                        playerPositionY += derectionTravePlayer;                        
 
-                        if (map[playerX, playerY] == '$') 
-                        {
-                            Console.SetCursorPosition(screenCenter, 0) ;
-                            Console.WriteLine("|  Game Over  |");
-                            isGameOver = true;
-                            Console.ReadKey();
-                        }
-
-                        Console.SetCursorPosition(playerY, playerX);
+                        Console.SetCursorPosition(playerPositionY, playerPositionX);
                         Console.Write(skinPlayer);
-                        playerDX = 0;
-                        playerDY = 0;
+                        derectionTravelPlayer = 0;
+                        derectionTravePlayer = 0;
                     }
+                }
+
+                if (map[playerPositionX, playerPositionY] == '$')
+                {
+                    Console.SetCursorPosition(screenCenter, 0);
+                    Console.WriteLine("|  Game Over  |");
+                    isGameOver = true;
+                    Console.ReadKey();
                 }
 
             }
         }
-
        
-        static char[,] SelectionLevel(ref int playerX,ref int playerY)
+        static char[,] SelectionLevel(ref int playerPositionX,ref int playerPositionY)
         {
             const string CommandTutorialLevel = "1";
             const string CommandLevel_1 = "2";
@@ -104,27 +113,25 @@ namespace homeWork_MyGame
             switch (selectedLevel)
             {
                 case CommandTutorialLevel:
-                    map = ReadMap("TutoralLevel", ref playerX, ref playerY);
+                    map = ReadMap("TutoralLevel", ref playerPositionX, ref playerPositionY);
                     DrowMap(map);
                     break;
 
                case CommandLevel_1:
-                    map = ReadMap("Level_1",ref playerX,ref playerY);
+                    map = ReadMap("Level_1",ref playerPositionX,ref playerPositionY);
                     DrowMap(map);
                     break;
 
                 default:
-                    map = ReadMap("TestRoom", ref playerX, ref playerY);
+                    map = ReadMap("TestRoom", ref playerPositionX, ref playerPositionY);
                     DrowMap(map);
                     break;
             }
 
             return map;
         }
-
-     
-
-        static char[,] ReadMap(string mapName,ref int playerX, ref int playerY ) 
+             
+        static char[,] ReadMap(string mapName,ref int playerPositionX, ref int playerPositionY ) 
         {
             string[] fileMap = File.ReadAllLines($"Levels/{mapName}.txt");
             char[,] map = new char[fileMap.Length, fileMap[0].Length];
@@ -137,8 +144,8 @@ namespace homeWork_MyGame
 
                     if (map[i,j] == '◄') 
                     {
-                        playerX = i;
-                        playerY = j;
+                        playerPositionX = i;
+                        playerPositionY = j;
                     }
                 }
             }
